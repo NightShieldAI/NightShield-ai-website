@@ -7,8 +7,22 @@ import { Calculator, TrendingUp, Info, RefreshCw, Download, Shield } from "lucid
  * Black/red theme • glass cards • soft glow • smooth micro‑interactions
  */
 
-const formatGBP = (n: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-const fmtInt = (n: number) => new Intl.NumberFormat("en-GB").format(Math.round(n));
+const formatGBP = (n: number) => {
+  if (isNaN(n) || !isFinite(n)) return "£0";
+  return new Intl.NumberFormat("en-GB", { 
+    style: "currency", 
+    currency: "GBP", 
+    minimumFractionDigits: 0, 
+    maximumFractionDigits: 0,
+    notation: n >= 1000000 ? "compact" : "standard"
+  }).format(n);
+};
+const fmtInt = (n: number) => {
+  if (isNaN(n) || !isFinite(n)) return "0";
+  return new Intl.NumberFormat("en-GB", {
+    notation: n >= 1000000 ? "compact" : "standard"
+  }).format(Math.round(n));
+};
 
 export default function NightShieldROI() {
   // Scenario (applies multiplier to unit-cost assumptions)
@@ -139,7 +153,7 @@ export default function NightShieldROI() {
               <Stat label="Subscription fee" value={-fee} negative />
             </div>
 
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <SummaryTile label="Total Monthly Benefit" value={totals.totalBenefit} kind="accent" />
               <SummaryTile label="Net Impact (Benefit − Fee)" value={totals.net} />
               <SummaryTile label="ROI % (Net / Fee)" value={totals.roiPct} isPercent />
@@ -229,10 +243,21 @@ function SliderField({ label, min=0, max=10, value, onChange }: { label: string;
 }
 
 function Stat({ label, value, negative=false }: { label: string; value: number; negative?: boolean }) {
+  const display = negative ? `- ${formatGBP(Math.abs(value))}` : formatGBP(value);
+  
+  // Dynamic text sizing based on number length
+  const getTextSize = (text: string) => {
+    const length = text.length;
+    if (length <= 8) return 'text-sm sm:text-base md:text-lg';        // £28,576
+    if (length <= 10) return 'text-xs sm:text-sm md:text-base';       // £1,234,567
+    if (length <= 12) return 'text-xs sm:text-xs md:text-sm';         // £12,345,678
+    return 'text-xs';                                                 // Very large numbers
+  };
+
   return (
     <motion.div initial={{opacity:0, y:8}} animate={{opacity:1, y:0}} className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 sm:p-4 min-h-[80px] sm:min-h-[90px] flex flex-col justify-center">
-      <div className="text-xs sm:text-sm text-zinc-400 leading-tight">{label}</div>
-      <div className={`mt-1 text-lg sm:text-xl font-semibold ${negative ? 'text-red-300' : 'text-zinc-100'} break-words`}>{negative ? `- ${formatGBP(Math.abs(value))}` : formatGBP(value)}</div>
+      <div className="text-xs sm:text-sm text-zinc-400 leading-tight mb-1">{label}</div>
+      <div className={`${getTextSize(display)} font-semibold ${negative ? 'text-red-300' : 'text-zinc-100'} leading-none text-center`}>{display}</div>
     </motion.div>
   );
 }
@@ -242,10 +267,20 @@ function SummaryTile({ label, value, kind, isPercent=false }: { label: string; v
   const cls = kind === 'accent'
     ? 'border-red-900/40 bg-red-950/20 text-red-400'
     : 'border-zinc-800 bg-zinc-950/70 text-zinc-100';
+  
+  // Dynamic text sizing based on number length
+  const getTextSize = (text: string) => {
+    const length = text.length;
+    if (length <= 8) return 'text-xl sm:text-2xl md:text-3xl';      // £28,576
+    if (length <= 10) return 'text-lg sm:text-xl md:text-2xl';      // £1,234,567
+    if (length <= 12) return 'text-base sm:text-lg md:text-xl';     // £12,345,678
+    return 'text-sm sm:text-base md:text-lg';                       // Very large numbers
+  };
+
   return (
     <motion.div initial={{opacity:0, y:8}} animate={{opacity:1, y:0}} className={`rounded-xl p-3 sm:p-4 border ${cls} min-h-[100px] sm:min-h-[110px] flex flex-col justify-center`}>
-      <div className={`${kind==='accent' ? 'text-xs sm:text-sm text-red-300' : 'text-xs sm:text-sm text-zinc-400'} leading-tight`}>{label}</div>
-      <div className={`mt-1 text-xl sm:text-2xl font-semibold ${kind==='accent' ? 'text-red-400' : ''} break-words`}>{display}</div>
+      <div className={`${kind==='accent' ? 'text-xs sm:text-sm text-red-300' : 'text-xs sm:text-sm text-zinc-400'} leading-tight mb-2`}>{label}</div>
+      <div className={`${getTextSize(display)} font-semibold ${kind==='accent' ? 'text-red-400' : 'text-zinc-100'} leading-none text-center`}>{display}</div>
     </motion.div>
   );
 }
@@ -259,16 +294,27 @@ function GhostButton({ children, icon, onClick }: { children: React.ReactNode; i
 }
 
 function MobileSummaryBar({ total, roiPct }: { total: number; roiPct: number }) {
+  const totalDisplay = formatGBP(total);
+  const roiDisplay = `${fmtInt(roiPct)}%`;
+  
+  // Dynamic text sizing for mobile
+  const getMobileTextSize = (text: string) => {
+    const length = text.length;
+    if (length <= 8) return 'text-sm';      // £28,576
+    if (length <= 10) return 'text-xs';     // £1,234,567
+    return 'text-[10px]';                   // Very large numbers
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-red-900/40 bg-red-950/20 px-3 py-2">
-          <div className="text-[10px] uppercase tracking-wide text-red-300 leading-tight">Total Benefit</div>
-          <div className="text-lg font-semibold text-red-400 break-words">{formatGBP(total)}</div>
+        <div className="rounded-xl border border-red-900/40 bg-red-950/20 px-3 py-2 flex flex-col justify-center">
+          <div className="text-[9px] uppercase tracking-wide text-red-300 leading-tight mb-1">Total Benefit</div>
+          <div className={`${getMobileTextSize(totalDisplay)} font-semibold text-red-400 leading-none text-center`}>{totalDisplay}</div>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2">
-          <div className="text-[10px] uppercase tracking-wide text-zinc-400 leading-tight">ROI %</div>
-          <div className="text-lg font-semibold text-zinc-100">{fmtInt(roiPct)}%</div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2 flex flex-col justify-center">
+          <div className="text-[9px] uppercase tracking-wide text-zinc-400 leading-tight mb-1">ROI %</div>
+          <div className={`${getMobileTextSize(roiDisplay)} font-semibold text-zinc-100 leading-none text-center`}>{roiDisplay}</div>
         </div>
       </div>
     </div>
