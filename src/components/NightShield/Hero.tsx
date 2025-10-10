@@ -142,8 +142,7 @@ const Hero = () => {
             
 
 
-            {/* VSL Section - Hidden on Mobile */}
-            {!isMobile && (
+            {/* VSL Section */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -161,7 +160,7 @@ const Hero = () => {
               </div>
 
               {/* VSL Video Container */}
-              <div className="relative max-w-4xl mx-auto vsl-video-container">
+              <div className="relative max-w-4xl mx-auto">
                 {/* VSL Border Container with Red Theme */}
                 <div className="relative p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-red-900/30 via-red-800/20 to-red-900/30 rounded-2xl border-2 border-red-200/40 shadow-2xl shadow-red-100/40">
                   {/* Inner Glow Effect */}
@@ -216,7 +215,6 @@ const Hero = () => {
                 </div>
               </div>
             </motion.div>
-            )}
 
             {/* Call to Action */}
             <motion.div
