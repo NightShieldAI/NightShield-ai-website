@@ -271,10 +271,10 @@ function SummaryTile({ label, value, kind, isPercent=false }: { label: string; v
   // Dynamic text sizing based on number length
   const getTextSize = (text: string) => {
     const length = text.length;
-    if (length <= 8) return 'text-xl sm:text-2xl md:text-3xl';      // £28,576
-    if (length <= 10) return 'text-lg sm:text-xl md:text-2xl';      // £1,234,567
-    if (length <= 12) return 'text-base sm:text-lg md:text-xl';     // £12,345,678
-    return 'text-sm sm:text-base md:text-lg';                       // Very large numbers
+    if (length <= 8) return 'text-lg sm:text-xl md:text-2xl';       // £28,576
+    if (length <= 10) return 'text-base sm:text-lg md:text-xl';     // £1,234,567
+    if (length <= 12) return 'text-sm sm:text-base md:text-lg';     // £12,345,678
+    return 'text-xs sm:text-sm md:text-base';                       // Very large numbers
   };
 
   return (
