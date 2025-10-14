@@ -146,14 +146,14 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 2.0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
               className="mb-8 sm:mb-12"
             >
               {/* VSL Header */}
               <div className="text-center mb-4 sm:mb-6 px-2">
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-4 tracking-tight">
+                {/* <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-4 tracking-tight">
                   See NightShield in Action
-                </h2>
+                </h2> */}
                 <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                   Watch our AI prevent incidents before they happen
                 </p>
@@ -170,8 +170,7 @@ const Hero = () => {
                   <div className="relative bg-black rounded-xl overflow-hidden shadow-xl border border-red-500/30">
                     <div className="relative" style={{ paddingTop: '56.25%' }}>
                       <iframe
-                        src="https://customer-k3cj56a9l7jvykr1.cloudflarestream.com/05611ee0f64fcd0e1b317bed8cfce772/iframe?poster=https%3A%2F%2Fimagedelivery.net%2FsGwlGTkiTjXCqLHfhol7bg%2Fd8dda54a-02da-4f7e-0659-754569d93a00%2Fpublic"
-
+                        src="https://customer-k3cj56a9l7jvykr1.cloudflarestream.com/05611ee0f64fcd0e1b317bed8cfce772/iframe?poster=https%3A%2F%2Fimagedelivery.net%2FsGwlGTkiTjXCqLHfhol7bg%2Fd8dda54a-02da-4f7e-0659-754569d93a00%2Fpublic&preload=true"
                         loading="eager"
                         style={{ border: 'none', position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
                         allow="accelerometer; gyroscope; encrypted-media; picture-in-picture; autoplay; fullscreen"
@@ -220,8 +219,8 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 2.2 }}
-              className="flex justify-center items-center mb-6 sm:mb-8 md:mb-12 px-4"
+              transition={{ duration: 0.5, delay: 1.0 }}
+              className="flex justify-center items-center mb-6 sm:mb-8 md:mb-10 px-4"
             >
               <a
                 href="https://calendly.com/nightshield/demo"
@@ -237,7 +236,7 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 2.6 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
               className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12 md:mt-16 max-w-lg mx-auto px-4"
             >
               <div className="text-center">
