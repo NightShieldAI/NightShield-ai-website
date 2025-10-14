@@ -154,9 +154,9 @@ const Hero = () => {
                 {/* <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-4 tracking-tight">
                   See NightShield in Action
                 </h2> */}
-                <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                {/* <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                   Watch our AI prevent incidents before they happen
-                </p>
+                </p> */}
               </div>
 
               {/* VSL Video Container */}
@@ -226,7 +226,7 @@ const Hero = () => {
                 href="https://calendly.com/nightshield/demo"
                 target="_blank"
                 rel="noopener noreferrer nofollow"
-                className="btn-primary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold hover:scale-105 active:scale-95 transition-transform w-full sm:w-auto text-center"
+                className="btn-primary px-8 sm:px-10 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl font-bold hover:scale-105 active:scale-95 transition-transform inline-block text-center whitespace-nowrap"
               >
                 Book Free Demo
               </a>
