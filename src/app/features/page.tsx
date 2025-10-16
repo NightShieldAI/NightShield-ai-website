@@ -561,7 +561,7 @@ const Features = () => {
                 className="group relative"
               >
                 <motion.div
-                  className="relative p-4 md:p-6 rounded-2xl bg-gray-900/50 border border-gray-800 hover:border-gray-600 transition-all duration-500 h-full"
+                  className=" flex flex-col items-center justify-center relative p-4 md:p-6 rounded-2xl bg-gray-900/50 border border-gray-800 hover:border-gray-600 transition-all duration-500 h-full"
                   whileHover={{ 
                     scale: 1.05, 
                     y: -10,
@@ -569,8 +569,10 @@ const Features = () => {
                   }}
                 >
                   {/* Coming soon badge */}
-                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                    Soon
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold justify-center items-center flex">
+                    <div className="flex items-center justify-center flex-col">
+                      Soon
+                    </div>
                   </div>
 
                   <motion.div
@@ -580,8 +582,10 @@ const Features = () => {
                     )}
                     whileHover={{ rotate: 5, scale: 1.1 }}
                   >
-                    <div className="text-white scale-75 md:scale-100">
+                    <div className="flex items-center justify-center">
+                    <div className="text-white scale-75 md:scale-100 flex items-center justify-center ">
                       {feature.icon}
+                    </div>
                     </div>
                   </motion.div>
 
@@ -709,7 +713,7 @@ const Features = () => {
               >
                 <motion.div
                   className={cn(
-                    "relative p-4 md:p-6 rounded-2xl border transition-all duration-500 h-full bg-gradient-to-br",
+                    "relative p-4 md:p-6 rounded-2xl border transition-all duration-500 h-full bg-gradient-to-br flex flex-col items-center justify-center",
                     feature.gradient,
                     "border-gray-700 hover:border-gray-500 backdrop-blur-sm"
                   )}
@@ -839,7 +843,7 @@ const Features = () => {
                 className="group relative"
               >
                 <motion.div
-                  className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 rounded-3xl p-6 md:p-8 border border-gray-700 hover:border-red-500/50 transition-all duration-500 h-full"
+                  className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 rounded-3xl p-6 md:p-8 border flex flex-col items-center justify-center border-gray-700 hover:border-red-500/50 transition-all duration-500 h-full"
                   whileHover={{ 
                     scale: 1.03, 
                     y: -10,
