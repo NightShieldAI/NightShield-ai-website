@@ -1,13 +1,38 @@
 'use client'
 
-import React, { useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Contact from '@/components/NightShield/Contact'
 import NightShieldROI from '@/components/NightShield/RoiCalc'
 
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState('monthly')
+  const [currency, setCurrency] = useState('GBP')
+
+  // Currency conversion and symbols
+  const conversionRates = {
+    GBP: 1,
+    USD: 1.25,
+    EUR: 1.15,
+    AUD: 1.9,
+  }
+
+  const currencySymbols = {
+    GBP: '£',
+    USD: '$',
+    EUR: '€',
+    AUD: 'A$',
+  }
+
+  // Persist currency choice in localStorage
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('ns_currency') : null
+    if (saved) setCurrency(saved)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') localStorage.setItem('ns_currency', currency)
+  }, [currency])
 
   const plans = [
     {
@@ -70,21 +95,18 @@ const Pricing = () => {
     }
   ]
 
-
-
-    return (
+  return (
     <section id="pricing" className="relative overflow-hidden py-12 md:py-16 px-4">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 via-transparent to-red-500/10"></div>
-      
+
       {/* Animated Background Elements */}
       <div className="absolute top-10 left-10 w-32 h-32 md:w-48 md:h-48 bg-red-500/5 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-10 right-10 w-40 h-40 md:w-64 md:h-64 bg-red-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      
+
       <div className="container mx-auto relative z-10 pt-20 md:pt-0">
         {/* Hero Section */}
-        
         <div className="text-center max-w-4xl mx-auto mb-16 lg:pt-20">
           {/* Icon with glow effect */}
           <div className="relative inline-block mb-4 md:mb-6">
@@ -95,8 +117,6 @@ const Pricing = () => {
               </svg>
             </div>
           </div>
-          <br className="block lg:hidden"/>
-          {/* Main heading with gradient text */}
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-black mb-4 md:mb-6 leading-tight px-2">
             <span className="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
               Simple
@@ -106,28 +126,47 @@ const Pricing = () => {
               Pricing
             </span>
           </h1>
-          
-          {/* Subtitle with modern styling */}
+
           <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light mb-6 md:mb-8 px-2">
             Choose the perfect plan for your venue size and security needs. All plans include professional installation, 24/7 support, and our industry-leading AI technology.
           </p>
 
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center space-x-3 md:space-x-4">
-            <span className={`text-xs md:text-sm ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>
-              Monthly
-            </span>
-            <button
-              onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-              className="relative w-14 h-7 md:w-16 md:h-8 bg-red-500/20 rounded-full p-1 transition-colors duration-200"
-            >
-              <div
-                className={`w-5 h-5 md:w-6 md:h-6 bg-red-500 rounded-full transition-transform duration-200 ${billingCycle === 'yearly' ? 'translate-x-7 md:translate-x-8' : 'translate-x-0'}`}
-              />
-            </button>
-            <span className={`text-xs md:text-sm ${billingCycle === 'yearly' ? 'text-white' : 'text-gray-400'}`}>
-              Yearly <span className="text-red-500">(Save 20%)</span>
-            </span>
+          {/* Billing cycle + Currency selector */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 mb-6">
+            {/* Billing cycle switch */}
+            <div className="flex items-center space-x-3 md:space-x-4">
+              <span className={`text-xs md:text-sm ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>
+                Monthly
+              </span>
+              <button
+                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
+                className="relative w-14 h-7 md:w-16 md:h-8 bg-red-500/20 rounded-full p-1 transition-colors duration-200"
+              >
+                <div
+                  className={`w-5 h-5 md:w-6 md:h-6 bg-red-500 rounded-full transition-transform duration-200 ${billingCycle === 'yearly' ? 'translate-x-7 md:translate-x-8' : 'translate-x-0'}`}
+                />
+              </button>
+              <span className={`text-xs md:text-sm ${billingCycle === 'yearly' ? 'text-white' : 'text-gray-400'}`}>
+                Yearly <span className="text-red-500">(Save 20%)</span>
+              </span>
+            </div>
+
+            {/* Currency Selector */}
+            <div className="flex items-center space-x-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 backdrop-blur-md">
+              <span className="text-xs md:text-sm text-gray-300">Currency:</span>
+              <select
+                className="bg-transparent text-  text-sm outline-none cursor-pointer"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <div className="text-black">
+                <option value="GBP">GBP (£)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="AUD">AUD (A$)</option>
+                </div>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -141,11 +180,7 @@ const Pricing = () => {
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto mb-16 px-2">
           {plans.map((plan, index) => (
-            <div
-              key={index}
-              className={`relative group`}
-            >
-              {/* Popular Badge */}
+            <div key={index} className="relative group">
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
                   <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
@@ -154,19 +189,16 @@ const Pricing = () => {
                 </div>
               )}
 
-              {/* Glassmorphism card */}
               <div className={`relative bg-white/5 backdrop-blur-xl border rounded-2xl p-4 md:p-6 h-full transition-all duration-300 ${
                 plan.popular 
                   ? 'border-red-500/50 shadow-2xl shadow-red-500/20' 
                   : 'border-white/10'
               }`}>
-                {/* Plan Header */}
                 <div className="relative z-10 text-center mb-6 md:mb-8">
                   <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">{plan.name}</h3>
                   <p className="text-gray-300 mb-3 md:mb-4 text-sm md:text-base">{plan.description}</p>
                   <p className="text-xs md:text-sm text-gray-400 mb-4 md:mb-6">{plan.bestFor}</p>
-                  
-                  {/* Price with glow effect */}
+
                   <div className="mb-4 md:mb-6 relative">
                     <div className="absolute inset-0 bg-red-500/20 rounded-full blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="relative">
@@ -180,7 +212,10 @@ const Pricing = () => {
                       ) : (
                         <>
                           <span className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
-                            £{plan.price[billingCycle as keyof typeof plan.price]}
+                            {currencySymbols[currency as keyof typeof currencySymbols]}
+                            {typeof plan.price[billingCycle as keyof typeof plan.price] === 'number'
+                              ? Math.round((plan.price[billingCycle as keyof typeof plan.price] as number) * conversionRates[currency as keyof typeof conversionRates])
+                              : plan.price[billingCycle as keyof typeof plan.price]}
                           </span>
                           <span className="text-gray-400 text-sm md:text-base ml-1">/month</span>
                         </>
@@ -188,7 +223,6 @@ const Pricing = () => {
                     </div>
                   </div>
 
-                  {/* Plan Details */}
                   <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6 text-xs md:text-sm">
                     <div className="text-center p-2 bg-black/20 rounded-lg">
                       <div className="text-red-400 font-semibold">Setup</div>
@@ -200,7 +234,6 @@ const Pricing = () => {
                     </div>
                   </div>
 
-                  {/* CTA Button */}
                   <button
                     onClick={() => {
                       const element = document.querySelector('#contact')
@@ -218,7 +251,6 @@ const Pricing = () => {
                   </button>
                 </div>
 
-                {/* Features */}
                 <div className="relative z-10">
                   <h4 className="font-semibold text-white mb-3 md:mb-4 text-sm md:text-base group-hover:text-red-100 transition-colors">What&apos;s included:</h4>
                   <ul className="space-y-2 md:space-y-3">
@@ -239,21 +271,16 @@ const Pricing = () => {
           ))}
         </div>
 
-        {/* Onboarding Fees Notice */}
         <div className="max-w-3xl mx-auto -mt-6 mb-16 px-2">
           <div className="text-xs md:text-sm text-gray-300/90 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-center">
             One-time onboarding fees apply in addition to subscription pricing.
           </div>
         </div>
 
-        {/* Additional Info */}
         <div className="text-center px-2">
           <div className="relative group">
-            {/* Glassmorphism card */}
             <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 max-w-4xl mx-auto hover:bg-white/10 hover:border-red-500/30 transition-all duration-500">
-              {/* Gradient border effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
               <div className="relative z-10">
                 <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-white group-hover:text-red-100 transition-colors">
                   Need a Custom Solution?
@@ -294,12 +321,12 @@ const Pricing = () => {
           </div>
         </div>
       </div>
-      
+
       {/* ROI Calculator Section */}
       <div className="mt-20">
         <NightShieldROI />
       </div>
-      
+
       <Contact compact />
     </section>
   )
