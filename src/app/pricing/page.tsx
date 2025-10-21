@@ -4,96 +4,148 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Contact from '@/components/NightShield/Contact'
 import NightShieldROI from '@/components/NightShield/RoiCalc'
+type Currency = 'GBP' | 'USD' | 'EUR' | 'AUD'
+type BillingCycle = 'monthly' | 'yearly'
 
-const Pricing = () => {
-  const [billingCycle, setBillingCycle] = useState('monthly')
-  const [currency, setCurrency] = useState('GBP')
+interface Plan {
+  name: string
+  price: { monthly: number | 'Custom'; yearly: number | 'Custom' }
+  description: string
+  features: string[]
+  popular: boolean
+  isCustom?: boolean
+}
 
-  // Currency conversion and symbols
-  const conversionRates = {
+// Component
+const Pricing: React.FC = () => {
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly')
+  const [currency, setCurrency] = useState<Currency>('GBP')
+  const [conversionRates, setConversionRates] = useState<Record<Currency, number>>({
     GBP: 1,
     USD: 1.25,
     EUR: 1.15,
     AUD: 1.9,
-  }
+  })
+  const [loadingRates, setLoadingRates] = useState<boolean>(true)
+  const [errorRates, setErrorRates] = useState<string | null>(null)
 
-  const currencySymbols = {
+  const currencySymbols: Record<Currency, string> = {
     GBP: '£',
     USD: '$',
     EUR: '€',
     AUD: 'A$',
   }
 
-  // Persist currency choice in localStorage
+  // Restore saved currency from localStorage
   useEffect(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('ns_currency') : null
-    if (saved) setCurrency(saved)
+    if (saved && ['GBP', 'USD', 'EUR', 'AUD'].includes(saved)) {
+      setCurrency(saved as Currency)
+    }
   }, [])
 
+  // Persist currency selection
   useEffect(() => {
-    if (typeof window !== 'undefined') localStorage.setItem('ns_currency', currency)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ns_currency', currency)
+    }
   }, [currency])
 
-  const plans = [
+  // Fetch live exchange rates
+  useEffect(() => {
+    const fetchRates = async () => {
+      setLoadingRates(true)
+      setErrorRates(null)
+
+      try {
+        const base = 'GBP'
+        const targetCurrencies = ['USD', 'EUR', 'AUD', 'GBP'].join(',')
+        const url = `https://v6.exchangerate-api.com/v6/240e270b1ba11c4f270ac496/latest/${base}`
+        const resp = await fetch(url)
+        const data = await resp.json()
+        console.log(data)
+        setConversionRates({
+          GBP: 1,
+          USD: data.conversion_rates.USD,
+          EUR: data.conversion_rates.EUR,
+          AUD: data.conversion_rates.AUD,
+        })
+      } catch (err: any) {
+        console.error(err)
+        setErrorRates(err.message || 'Error fetching rates')
+        // Fallback static rates
+        setConversionRates({
+          GBP: 1,
+          USD: 1.25,
+          EUR: 1.15,
+          AUD: 1.9,
+        })
+      } finally {
+        setLoadingRates(false)
+      }
+    }
+
+    fetchRates()
+  }, [])
+
+  const plans: Plan[] = [
     {
-      name: "Starter",
+      name: 'Starter',
       price: { monthly: 499, yearly: 399 },
-      description: "Perfect for small venues and bars",
+      description: 'Perfect for small venues and bars',
       features: [
-        "Up to 4 cameras",
-        "Basic AI detection",
-        "Mobile app alerts",
-        "7-day cloud storage",
-        "Email support"
+        'Up to 4 cameras',
+        'Basic AI detection',
+        'Mobile app alerts',
+        '7-day cloud storage',
+        'Email support',
       ],
       popular: false,
-      bestFor: "Small bars, cafes, and intimate venues",
-      setupTime: "1-2 days",
-      uptime: "99.5%"
     },
     {
-      name: "Professional",
+      name: 'Professional',
       price: { monthly: 1499, yearly: 999 },
-      description: "Ideal for medium-sized venues and clubs",
+      description: 'Ideal for medium-sized venues and clubs',
       features: [
-        "Up to 12 cameras",
-        "Advanced AI detection",
-        "Real-time alerts",
-        "30-day cloud storage",
-        "Priority support",
-        "Custom integrations",
-        "Analytics dashboard"
+        'Up to 12 cameras',
+        'Advanced AI detection',
+        'Real-time alerts',
+        '30-day cloud storage',
+        'Priority support',
+        'Custom integrations',
+        'Analytics dashboard',
       ],
       popular: true,
-      bestFor: "Medium clubs, restaurants, and event spaces",
-      setupTime: "2-3 days",
-      uptime: "99.8%"
     },
     {
-      name: "Enterprise",
-      price: { monthly: "Custom", yearly: "Custom" },
-      description: "Custom pricing for enterprise needs",
+      name: 'Enterprise',
+      price: { monthly: 'Custom', yearly: 'Custom' },
+      description: 'Custom pricing for enterprise needs',
       features: [
-        "Unlimited cameras",
-        "Premium AI detection",
-        "Instant alerts",
-        "90-day cloud storage",
-        "24/7 phone support",
-        "Custom integrations",
-        "Advanced analytics",
-        "Multi-venue management",
-        "Dedicated account manager",
-        "Pooled usage",
-        "Invoice/PO billing",
-        "Priority support and account management"
+        'Unlimited cameras',
+        'Premium AI detection',
+        'Instant alerts',
+        '90-day cloud storage',
+        '24/7 phone support',
+        'Advanced analytics',
+        'Dedicated account manager',
       ],
       popular: false,
-      bestFor: "Large venues, chains, and multi-location businesses",
-      setupTime: "3-5 days",
-      uptime: "99.9%",
-      isCustom: true
-    }
+      isCustom: true,
+    },
   ]
+
+  const getConvertedPrice = (plan: Plan): string => {
+    const value = plan.price[billingCycle]
+    if (value === 'Custom') return 'Custom'
+    const rate = conversionRates[currency] || 1
+    const symbol = currencySymbols[currency]
+    const converted = value * rate
+    return `${symbol}${converted.toFixed(0)}`
+  }
+
+  if (loadingRates) return <div>Loading conversion rates…</div>
+
 
   return (
     <section id="pricing" className="relative overflow-hidden py-12 md:py-16 px-4">
@@ -157,7 +209,7 @@ const Pricing = () => {
               <select
                 className="bg-transparent text-  text-sm outline-none cursor-pointer"
                 value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
+                onChange={(e) => setCurrency(e.target.value as Currency)}
               >
                 <div className="text-black">
                 <option value="GBP">GBP (£)</option>
@@ -197,7 +249,7 @@ const Pricing = () => {
                 <div className="relative z-10 text-center mb-6 md:mb-8">
                   <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">{plan.name}</h3>
                   <p className="text-gray-300 mb-3 md:mb-4 text-sm md:text-base">{plan.description}</p>
-                  <p className="text-xs md:text-sm text-gray-400 mb-4 md:mb-6">{plan.bestFor}</p>
+                  <p className="text-xs md:text-sm text-gray-400 mb-4 md:mb-6">{(plan as any).bestFor as string}</p>
 
                   <div className="mb-4 md:mb-6 relative">
                     <div className="absolute inset-0 bg-red-500/20 rounded-full blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -226,11 +278,11 @@ const Pricing = () => {
                   <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6 text-xs md:text-sm">
                     <div className="text-center p-2 bg-black/20 rounded-lg">
                       <div className="text-red-400 font-semibold">Setup</div>
-                      <div className="text-gray-300">{plan.setupTime}</div>
+                      <div className="text-gray-300">{(plan as any).setupTime as string}</div>
                     </div>
                     <div className="text-center p-2 bg-black/20 rounded-lg">
                       <div className="text-red-400 font-semibold">Uptime</div>
-                      <div className="text-gray-300">{plan.uptime}</div>
+                      <div className="text-gray-300">{(plan as any).uptime as string}</div>
                     </div>
                   </div>
 
